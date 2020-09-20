@@ -1,5 +1,9 @@
-### http/https
-https://zhuanlan.zhihu.com/p/72616216
+### 常见的API有哪些？
+
+### 任务、队列、线程的关系
+
+### 如何线程切换？
+
 
 
 
