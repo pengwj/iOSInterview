@@ -49,9 +49,16 @@ Ivar布局结构如下：
 4. forwardInvocation:方法
 5. doesNotRecognizeSelector:方法
 
-### runtime如何实现weak变量的自动置nil？
-runtime对注册的类，会进行布局，对于weak对象会放入一个hash表中。用weak指向的对象内存地址作为key，当此对象的引用计数为0的时候会dealloc，假如weak指向的对象内存地址是a，那么就会以a为键，在这个weak表中搜索，找到所有以a为键的weak对象，从而设置为nil。
+### runtime 如何实现weak变量的自动置nil？
++ runtime对注册的类，会进行布局，对于weak对象会放入一个hash表中。用weak指向的对象内存地址作为key，当此对象的引用计数为0的时候会dealloc，假如weak指向的对象内存地址是a，那么就会以a为键，在这个weak表中搜索，找到所有以a为键的weak对象，从而设置为nil。
 
+### weak 实现原理
++ Runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址（这个地址的值是所指对象指针的地址）数组。
 
+### weak 实现步骤
++ 1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。
++ 2、添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。
++ 3、释放时，调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。
++ https://www.jianshu.com/p/13c4fb1cedea
 
 
